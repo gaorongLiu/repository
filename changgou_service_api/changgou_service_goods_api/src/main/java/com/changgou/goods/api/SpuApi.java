@@ -11,7 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import java.util.Map;
 
 @Api(value = "goods详情",description = "管理goods详情")
-public interface SpuApi {
+public interface  SpuApi {
     /**
      * 查询全部数据
      *
@@ -45,14 +45,11 @@ Result addGoods(Goods goods);
     /***
      * 修改数据
      * @param
-     * @param id
+     * @param
      * @return
      */
     @ApiOperation("修改goods详情")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name="id",value = "goods详情ID",required=true, paramType = "path", dataTypeClass = String.class),
-    })
-    public Result update(Spu spu, String id);
+    public Result update(Goods goods);
 
 
     /***

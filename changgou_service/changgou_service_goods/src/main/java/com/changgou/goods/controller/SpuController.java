@@ -1,4 +1,5 @@
 package com.changgou.goods.controller;
+
 import com.changgou.common.entity.PageResult;
 import com.changgou.common.entity.Result;
 import com.changgou.common.entity.StatusCode;
@@ -9,8 +10,10 @@ import com.changgou.goods.pojo.Spu;
 import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/spu")
@@ -22,23 +25,25 @@ public class SpuController implements SpuApi {
 
     /**
      * 添加spu&sku
+     *
      * @param goods
      * @return
      */
     @PostMapping("/add")
-    public Result addGoods(@RequestBody Goods goods){
+    public Result addGoods(@RequestBody Goods goods) {
         spuService.add(goods);
-        return new Result(true,StatusCode.OK,"添加成功");
+        return new Result(true, StatusCode.OK, "添加成功");
     }
 
     /**
      * 查询全部数据
+     *
      * @return
      */
     @GetMapping
-    public Result findAll(){
+    public Result findAll() {
         List<Spu> spuList = spuService.findAll();
-        return new Result(true, StatusCode.OK,"查询成功",spuList) ;
+        return new Result(true, StatusCode.OK, "查询成功", spuList);
     }
 
     /***
@@ -47,9 +52,9 @@ public class SpuController implements SpuApi {
      * @return
      */
     @GetMapping("/{id}")
-    public Result findById(@PathVariable String id){
+    public Result findById(@PathVariable String id) {
         Goods goodsById = spuService.findGoodsById(id);
-        return new Result(true,StatusCode.OK,"查询成功",goodsById);
+        return new Result(true, StatusCode.OK, "查询成功", goodsById);
     }
 
 
@@ -59,23 +64,22 @@ public class SpuController implements SpuApi {
      * @return
      */
     @PostMapping
-    public Result add(@RequestBody Spu spu){
+    public Result add(@RequestBody Spu spu) {
         spuService.add(spu);
-        return new Result(true,StatusCode.OK,"添加成功");
+        return new Result(true, StatusCode.OK, "添加成功");
     }
 
 
     /***
      * 修改数据
-     * @param spu
-     * @param id
+     * @param
+     * @param
      * @return
      */
-    @PutMapping(value="/{id}")
-    public Result update(@RequestBody Spu spu,@PathVariable String id){
-        spu.setId(id);
-        spuService.update(spu);
-        return new Result(true,StatusCode.OK,"修改成功");
+    @PutMapping(value = "/{id}")
+    public Result update(@RequestBody Goods goods) {
+        spuService.update(goods);
+        return new Result(true, StatusCode.OK, "修改成功");
     }
 
 
@@ -84,10 +88,10 @@ public class SpuController implements SpuApi {
      * @param id
      * @return
      */
-    @DeleteMapping(value = "/{id}" )
-    public Result delete(@PathVariable String id){
+    @DeleteMapping(value = "/{id}")
+    public Result delete(@PathVariable String id) {
         spuService.delete(id);
-        return new Result(true,StatusCode.OK,"删除成功");
+        return new Result(true, StatusCode.OK, "删除成功");
     }
 
     /***
@@ -95,10 +99,10 @@ public class SpuController implements SpuApi {
      * @param searchMap
      * @return
      */
-    @PostMapping(value = "/search" )
-    public Result findList(@RequestBody Map searchMap){
+    @PostMapping(value = "/search")
+    public Result findList(@RequestBody Map searchMap) {
         List<Spu> list = spuService.findList(searchMap);
-        return new Result(true,StatusCode.OK,"查询成功",list);
+        return new Result(true, StatusCode.OK, "查询成功", list);
     }
 
 
@@ -109,12 +113,60 @@ public class SpuController implements SpuApi {
      * @param size
      * @return
      */
-    @PostMapping(value = "/search/{page}/{size}" )
-    public Result findPage(@RequestBody Map searchMap, @PathVariable  int page, @PathVariable  int size){
+    @PostMapping(value = "/search/{page}/{size}")
+    public Result findPage(@RequestBody Map searchMap, @PathVariable int page, @PathVariable int size) {
         Page<Spu> pageList = spuService.findPage(searchMap, page, size);
-        PageResult pageResult=new PageResult(pageList.getTotal(),pageList.getResult());
-        return new Result(true,StatusCode.OK,"查询成功",pageResult);
+        PageResult pageResult = new PageResult(pageList.getTotal(), pageList.getResult());
+        return new Result(true, StatusCode.OK, "查询成功", pageResult);
     }
 
+    /**
+     * 审核并上架
+     *
+     * @param id
+     * @return
+     */
+    @PostMapping("/audit/{id}")
+    public Result audit(@PathVariable String id) {
+        spuService.audit(id);
+        return new Result(true, StatusCode.OK, "审核完成，已上架");
 
+    }
+
+    @PostMapping("/pull/{id}")
+    public Result pull(@PathVariable String id) {
+        spuService.pull(id);
+        return new Result(true, StatusCode.OK, "已下架");
+
+    }
+
+    /**
+     * 上架商品
+     *
+     * @param id
+     * @return
+     */
+    @PostMapping("/put/{id}")
+    public Result put(@PathVariable String id) {
+        spuService.put(id);
+        return new Result(true, StatusCode.OK, "已上架");
+
+    }
+
+    @PostMapping("/delete/{id}")
+    public Result dyDelete(@PathVariable String id) {
+        spuService.dyDelete(id);
+        return new Result(true, StatusCode.OK, "以删除");
+    }
+
+    @PostMapping("/unDelete/{id}")
+    public Result unDelete(@PathVariable String id) {
+        spuService.unDelete(id);
+        return new Result(true, StatusCode.OK, "已还原");
+    }
+    @PostMapping("/redelete/{id}")
+    public  Result reDelete(@PathVariable String id){
+        spuService.reDelete(id);
+        return new Result(true, StatusCode.OK, "商品已清除");
+    }
 }

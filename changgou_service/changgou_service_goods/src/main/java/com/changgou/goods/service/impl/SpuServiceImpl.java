@@ -1,6 +1,8 @@
 package com.changgou.goods.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.changgou.common.exception.ExceptionCast;
+import com.changgou.common.model.response.goods.GoodsCode;
 import com.changgou.common.util.IdWorker;
 import com.changgou.goods.dao.*;
 import com.changgou.goods.pojo.*;
@@ -160,6 +162,106 @@ public class SpuServiceImpl implements SpuService {
         goods.setSpu(spu);
         goods.setSkuList(skus);
         return goods;
+    }
+
+    /**
+     * 修改
+     * @param goods
+     */
+    @Override
+    public void update(Goods goods) {
+        Spu spu = goods.getSpu();
+        spuMapper.updateByPrimaryKey(spu);
+
+        Example example=new Example(Sku.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("spuId",spu.getId());
+        skum.deleteByExample(example);
+    }
+
+    @Override
+    public void audit(String id) {
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+        if (spu==null){
+            ExceptionCast.cast(GoodsCode.GOODS_NOT_FIND_ERROR);
+        }
+        if ("1".equals(spu.getIsDelete())){
+            ExceptionCast.cast(GoodsCode.GOODS_HAS_BEEN_BEND);
+        }
+        spu.setStatus("1");
+        spu.setIsMarketable("1");
+        spuMapper.updateByPrimaryKey(spu);
+    }
+
+    /**
+     * 商品下架
+     * @param id
+     */
+    @Override
+    public void pull(String id) {
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+        if (spu==null){
+            ExceptionCast.cast(GoodsCode.GOODS_HAS_BEEN_BEND);
+        }
+        if (spu.getIsDelete().equals("1")){
+            ExceptionCast.cast(GoodsCode.GOODS_HAS_BEEN_BEND);
+        }
+        spu.setIsMarketable("0");
+        spuMapper.updateByPrimaryKey(spu);
+    }
+
+    @Override
+    public void put(String id) {
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+        if (spu==null){
+            ExceptionCast.cast(GoodsCode.GOODS_NOT_FIND_ERROR);
+        }
+        if (spu.getStatus().equals("0")){
+            ExceptionCast.cast(GoodsCode.GOODS_NOT_CHECK);
+        }
+        if (spu.getIsDelete().equals("1")){
+            ExceptionCast.cast(GoodsCode.GOODS_HAS_BEEN_BEND);
+        }
+        spu.setIsMarketable("1");
+        spuMapper.updateByPrimaryKey(spu);
+    }
+
+    @Override
+    public void dyDelete(String id) {
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+        if (spu==null){
+            ExceptionCast.cast(GoodsCode.GOODS_NOT_FIND_ERROR);
+        }
+        if (spu.getIsMarketable().equals("1")){
+            ExceptionCast.cast(GoodsCode.GOODS_NOT_SOLDOUT);
+        }
+        spu.setIsDelete("1");
+        spu.setStatus("0");
+        spuMapper.updateByPrimaryKey(spu);
+    }
+
+    @Override
+    public void unDelete(String id) {
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+        if (spu.getIsDelete().equals("1")){
+            ExceptionCast.cast(GoodsCode.GOODS_NOT_DELETE);
+        }
+        spu.setIsDelete("0");
+        spu.setStatus("0");
+        spu.setIsMarketable("0");
+        spuMapper.updateByPrimaryKey(spu);
+    }
+
+    @Override
+    public void reDelete(String id) {
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+        if (spu==null){
+            ExceptionCast.cast(GoodsCode.GOODS_NOT_FIND_ERROR);
+        }
+        if (spu.getIsDelete().equals("0")){
+            ExceptionCast.cast(GoodsCode.GOODS_NOT_AT_DELETEAREA);
+        }
+        spuMapper.deleteByPrimaryKey(spu);
     }
 
     private void saveSku(Goods goods) {

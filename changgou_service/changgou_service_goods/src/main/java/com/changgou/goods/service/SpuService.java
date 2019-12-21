@@ -76,4 +76,46 @@ public interface SpuService {
      * @return
      */
     Goods findGoodsById(String id);
+
+    /**
+     * 修改
+     * @param goods
+     */
+    void update(Goods goods);
+
+    /**
+     * 商品审核并下架
+     * @param id
+     */
+    void audit(String id);
+
+    /**
+     * 商品下架
+     * @param id
+     */
+    void pull(String id);
+
+    /**
+     * 商品上架
+     * @param id
+     */
+    void put(String id);
+
+    /**
+     * 虚拟删除商品
+     * @param id
+     */
+    void dyDelete(String id);
+
+    /**
+     * 还原删除
+     * @param id
+     */
+    void unDelete(String id);
+
+    /**
+     * 真实删除
+     * @param id
+     */
+    void reDelete(String id);
 }
