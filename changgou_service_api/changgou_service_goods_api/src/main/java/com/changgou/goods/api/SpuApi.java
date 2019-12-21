@@ -1,6 +1,7 @@
 package com.changgou.goods.api;
 
 import com.changgou.common.entity.Result;
+import com.changgou.goods.pojo.Goods;
 import com.changgou.goods.pojo.Spu;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -17,8 +18,9 @@ public interface SpuApi {
      * @return
      */
     @ApiOperation("查询所有goods详情列表")
-    public Result findAll();
-
+     Result findAll();
+@ApiOperation("添加数据")
+Result addGoods(Goods goods);
     /***
      * 根据ID查询数据
      * @param id

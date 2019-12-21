@@ -1,5 +1,6 @@
 package com.changgou.goods.service;
 
+import com.changgou.goods.pojo.Goods;
 import com.changgou.goods.pojo.Spu;
 import com.github.pagehelper.Page;
 
@@ -63,7 +64,16 @@ public interface SpuService {
      */
     Page<Spu> findPage(Map<String, Object> searchMap, int page, int size);
 
+    /**
+     * 处理前台传回的spu和sku
+     * @param goods
+     */
+    void add(Goods goods);
 
-
-
+    /**
+     * 通过商品id查询商品
+     * @param id
+     * @return
+     */
+    Goods findGoodsById(String id);
 }

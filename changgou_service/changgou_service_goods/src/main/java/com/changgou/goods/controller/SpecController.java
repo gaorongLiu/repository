@@ -3,6 +3,7 @@ import com.changgou.common.entity.PageResult;
 import com.changgou.common.entity.Result;
 import com.changgou.common.entity.StatusCode;
 import com.changgou.goods.api.SpecApi;
+import com.changgou.goods.pojo.Goods;
 import com.changgou.goods.service.SpecService;
 import com.changgou.goods.pojo.Spec;
 import com.github.pagehelper.Page;

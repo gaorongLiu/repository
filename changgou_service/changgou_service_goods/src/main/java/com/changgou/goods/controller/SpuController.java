@@ -3,6 +3,7 @@ import com.changgou.common.entity.PageResult;
 import com.changgou.common.entity.Result;
 import com.changgou.common.entity.StatusCode;
 import com.changgou.goods.api.SpuApi;
+import com.changgou.goods.pojo.Goods;
 import com.changgou.goods.service.SpuService;
 import com.changgou.goods.pojo.Spu;
 import com.github.pagehelper.Page;
@@ -18,6 +19,17 @@ public class SpuController implements SpuApi {
 
     @Autowired
     private SpuService spuService;
+
+    /**
+     * 添加spu&sku
+     * @param goods
+     * @return
+     */
+    @PostMapping("/add")
+    public Result addGoods(@RequestBody Goods goods){
+        spuService.add(goods);
+        return new Result(true,StatusCode.OK,"添加成功");
+    }
 
     /**
      * 查询全部数据
@@ -36,8 +48,8 @@ public class SpuController implements SpuApi {
      */
     @GetMapping("/{id}")
     public Result findById(@PathVariable String id){
-        Spu spu = spuService.findById(id);
-        return new Result(true,StatusCode.OK,"查询成功",spu);
+        Goods goodsById = spuService.findGoodsById(id);
+        return new Result(true,StatusCode.OK,"查询成功",goodsById);
     }
 
 
