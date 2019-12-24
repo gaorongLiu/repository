@@ -18,6 +18,11 @@ public class SkuServiceImpl implements SkuService {
     @Autowired
     private SkuMapper skuMapper;
 
+    @Override
+    public String findByCount() {
+        return skuMapper.findCount();
+    }
+
     /**
      * 查询全部列表
      * @return

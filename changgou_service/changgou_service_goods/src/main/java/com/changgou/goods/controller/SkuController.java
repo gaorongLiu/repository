@@ -29,6 +29,15 @@ public class SkuController implements SkuApi {
         return new Result(true, StatusCode.OK,"查询成功",skuList) ;
     }
 
+    /**
+     * 查询所有的记录
+     * @return
+     */
+    @GetMapping("/count")
+    public Result findCount(){
+        String byCount = skuService.findByCount();
+        return new Result(true, StatusCode.OK,"查询成功",byCount) ;
+    }
     /***
      * 根据ID查询数据
      * @param id

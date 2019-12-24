@@ -118,6 +118,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public boolean login(Admin admin) {
         //判断用户名密码不能为空
+        System.out.println(admin.getLoginName());
         if (StringUtils.isBlank(admin.getLoginName())){
             ExceptionCast.cast(SystemCode.SYSTEM_NOLOGINNAME_ERROR);
         }

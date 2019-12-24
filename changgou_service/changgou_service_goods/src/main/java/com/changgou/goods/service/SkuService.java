@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface SkuService {
+    /**
+     * 查询sku的总数
+     * @return
+     */
+    String findByCount();
 
     /***
      * 查询所有

@@ -112,6 +112,7 @@ public class AdminController implements AdminApi {
 
     @PostMapping("/login")
 public Result login(@RequestBody Admin admin){
+        System.out.println("sd阀手动阀"+admin.getLoginName());
     boolean login = adminService.login(admin);
     if (login){
         Map<String, String> info = new HashMap<>();
