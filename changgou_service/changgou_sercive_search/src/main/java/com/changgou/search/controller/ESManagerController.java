@@ -28,11 +28,5 @@ public class ESManagerController {
         esManagerService.importAll();
         return new Result(true, StatusCode.OK,"导入全部数据成功");
     }
-    @GetMapping("/count")
-    public Result find(){
-        String count = esManagerService.findCount();
-        System.out.println(count);
-        return new Result(true, StatusCode.OK,"ok");
 
-    }
 }

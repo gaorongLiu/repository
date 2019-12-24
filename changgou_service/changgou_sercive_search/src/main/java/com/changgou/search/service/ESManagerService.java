@@ -2,7 +2,7 @@ package com.changgou.search.service;
 
 public interface ESManagerService {
 
-    String findCount();
+   ;
 
     //创建索引库结构
     void createMappingAndIndex();

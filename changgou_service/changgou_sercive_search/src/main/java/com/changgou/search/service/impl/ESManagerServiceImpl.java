@@ -27,12 +27,6 @@ public class ESManagerServiceImpl implements ESManagerService {
     @Autowired
     private ESManagerMapper esManagerMapper;
 
-    @Override
-    public String findCount() {
-        String skuCount = skuFeign.findSkuCount();
-        System.out.println(skuCount);
-        return skuCount;
-    }
 
     /**
      * 创建索引库
@@ -51,12 +45,18 @@ public class ESManagerServiceImpl implements ESManagerService {
     public void importAll() {
 
         List<Sku> skuList = skuFeign.findSkuListBySpuId("all");
+        String skuCount = skuFeign.findSkuCount();
+        //查询sku总数据
+        int skuNum = Integer.valueOf(skuCount);
+        //一次上传多少条
+        int pagecount= (skuNum%2000) == 0 ? (skuNum/2000) : (skuNum/2000) + 1;
+
         if (skuList == null || skuList.size() <= 0) {
             ExceptionCast.cast(SearchCode.SEARCH_FOR_NULL);
         }
-        //skulist转化未json
+        //skulist转化为json
         String s = JSON.toJSONString(skuList);
-        //将json转换未skuinfo
+        //将json转换未skuinfo方便封装
         List<SkuInfo> skuInfos = JSON.parseArray(s, SkuInfo.class);
         for (SkuInfo skuInfo : skuInfos) {
             //将规格信息转换为map
