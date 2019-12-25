@@ -2,7 +2,9 @@ package com.changgou.search.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.changgou.common.exception.ExceptionCast;
+import com.changgou.common.model.response.Sku.SkuCode;
 import com.changgou.common.model.response.search.SearchCode;
+import com.changgou.goods.api.PageResult;
 import com.changgou.goods.feign.SkuFeign;
 import com.changgou.goods.pojo.Sku;
 import com.changgou.search.dao.ESManagerMapper;
@@ -44,27 +46,30 @@ public class ESManagerServiceImpl implements ESManagerService {
     @Override
     public void importAll() {
 
-        List<Sku> skuList = skuFeign.findSkuListBySpuId("all");
-        String skuCount = skuFeign.findSkuCount();
-        //查询sku总数据
-        int skuNum = Integer.valueOf(skuCount);
-        //一次上传多少条
-        int pagecount= (skuNum%2000) == 0 ? (skuNum/2000) : (skuNum/2000) + 1;
+       // List<Sku> skuList = skuFeign.findSkuListBySpuId("all");
+        //分页数据
+        PageResult<Sku> pageResult = skuFeign.findSkuPageBySpuId("all", 1);
 
-        if (skuList == null || skuList.size() <= 0) {
+        if (pageResult == null || pageResult.getTotal() == 0 || pageResult.getPages() == 0) {
             ExceptionCast.cast(SearchCode.SEARCH_FOR_NULL);
         }
-        //skulist转化为json
-        String s = JSON.toJSONString(skuList);
-        //将json转换未skuinfo方便封装
-        List<SkuInfo> skuInfos = JSON.parseArray(s, SkuInfo.class);
-        for (SkuInfo skuInfo : skuInfos) {
-            //将规格信息转换为map
-            Map map = JSON.parseObject(skuInfo.getSpec(), Map.class);
-            skuInfo.setSpecMap(map);
+        //总页数
+        Integer pages = pageResult.getPages();
+        for (int i = 1; i <=pages ; i++) {
+            List<Sku> skuList = skuFeign.findSkuPageBySpuId("all", i).getRows();
+
+            //skulist转化为json
+            String s = JSON.toJSONString(skuList);
+            //将json转换成skuinfo方便封装
+            List<SkuInfo> skuInfos = JSON.parseArray(s, SkuInfo.class);
+            for (SkuInfo skuInfo : skuInfos) {
+                Map map = JSON.parseObject(skuInfo.getSpec(), Map.class);
+                skuInfo.setSpecMap(map);
+            }
+            esManagerMapper.saveAll(skuInfos);
+            System.out.println("导入"+i+"页");
         }
-        //导入索引库
-        esManagerMapper.saveAll(skuInfos);
+
     }
 
     //根据spuid查询skuList,添加到索引库
@@ -87,9 +92,15 @@ public class ESManagerServiceImpl implements ESManagerService {
 
     @Override
     public void delDataBySpuId(String spuId) {
+        List<Sku> skuListBySpuId = skuFeign.findSkuListBySpuId(spuId);
+        if (skuListBySpuId.isEmpty() || skuListBySpuId.size()<0){
+            ExceptionCast.cast(SkuCode.SKU_FIND_EMPTY);
+        }
+        for (Sku sku : skuListBySpuId) {
+            esManagerMapper.deleteById(Long.valueOf(sku.getId()));
+        }
 
     }
-
     //创建索引库结构
 
 }

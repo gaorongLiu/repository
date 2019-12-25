@@ -1,13 +1,16 @@
 package com.changgou.goods.controller;
-import com.changgou.common.entity.PageResult;
+
 import com.changgou.common.entity.Result;
 import com.changgou.common.entity.StatusCode;
+import com.changgou.goods.api.PageResult;
 import com.changgou.goods.api.SkuApi;
-import com.changgou.goods.service.SkuService;
 import com.changgou.goods.pojo.Sku;
+import com.changgou.goods.service.SkuService;
 import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 @RestController
@@ -29,15 +32,7 @@ public class SkuController implements SkuApi {
         return new Result(true, StatusCode.OK,"查询成功",skuList) ;
     }
 
-    /**
-     * 查询所有的记录
-     * @return
-     */
-    @GetMapping("/count")
-    public Result findCount(){
-        String byCount = skuService.findByCount();
-        return new Result(true, StatusCode.OK,"查询成功",byCount) ;
-    }
+
     /***
      * 根据ID查询数据
      * @param id
@@ -113,5 +108,35 @@ public class SkuController implements SkuApi {
         return new Result(true,StatusCode.OK,"查询成功",pageResult);
     }
 
+    /**
+     * 通过spuid 查询sku
+     * @return
+     */
+    @GetMapping("/spu/{spuId}")
+    public List<Sku> findSkuListBySpuId(@PathVariable("spuId") String spuid){
+        Map<String,Object> searchMap=new HashMap<>();
+        if (!"all".equals(spuid)){
+            searchMap.put("spuid",spuid);
+        }
+        searchMap.put("status","1");
+        List<Sku> list = skuService.findList(searchMap);
+        return list;
+    }
 
+    /**
+     * 分页导入
+     * @param spuId
+     * @param page
+     * @return
+     */
+    @GetMapping("/spu/{spuId}/{page}")
+    public PageResult<Sku> findSkuPageBySpuId(@PathVariable("spuId") String spuId, @PathVariable("page") Integer page){
+        Map<String,Object> searchMap=new HashMap<>();
+        if (!"all".equals(spuId)){
+            searchMap.put("spuid",spuId);
+        }
+        searchMap.put("status","1");
+        Page<Sku> page1 = skuService.findPage(searchMap, page, 1000);
+        return new PageResult<>(page1.getTotal(),page1.getResult(),page1.getPages());
+    }
 }
