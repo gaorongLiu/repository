@@ -8,7 +8,6 @@ import java.util.Map;
 
 public interface SkuService {
 
-
     /***
      * 查询所有
      * @return

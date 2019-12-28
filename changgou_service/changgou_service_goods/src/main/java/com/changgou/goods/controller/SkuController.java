@@ -139,4 +139,5 @@ public class SkuController implements SkuApi {
         Page<Sku> page1 = skuService.findPage(searchMap, page, 1000);
         return new PageResult<>(page1.getTotal(),page1.getResult(),page1.getPages());
     }
+
 }
