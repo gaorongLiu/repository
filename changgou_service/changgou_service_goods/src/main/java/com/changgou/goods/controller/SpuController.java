@@ -169,4 +169,9 @@ public class SpuController implements SpuApi {
         spuService.reDelete(id);
         return new Result(true, StatusCode.OK, "商品已清除");
     }
+    @GetMapping("/findSpuById/{id}")
+    public Result<Spu> findSpuById(@PathVariable("id") String id){
+        Spu spu = spuService.findById(id);
+        return new Result(true,StatusCode.OK,"查询成功",spu);
+    }
 }

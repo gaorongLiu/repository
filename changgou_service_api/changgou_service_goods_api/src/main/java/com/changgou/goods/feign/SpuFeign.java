@@ -10,5 +10,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface SpuFeign {
 
     @GetMapping("/spu/findSpuById/{id}")
-    public Result<Spu> findSpuById(@PathVariable("id") String id);
+     Result<Spu> findSpuById(@PathVariable("id") String id);
 }
