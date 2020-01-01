@@ -1,0 +1,11 @@
+package com.changgou.web;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class WebGateWayApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(WebGateWayApplication.class, args);
+    }
+}
