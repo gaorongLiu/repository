@@ -41,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthToken login(String username, String password, String clientId, String clientSecret) {
         //1.申请令牌
-        ServiceInstance serviceInstance = loadBalancerClient.choose("user_auth");
+        ServiceInstance serviceInstance = loadBalancerClient.choose("user-auth");
         URI uri = serviceInstance.getUri();
 
         System.out.println(uri);
