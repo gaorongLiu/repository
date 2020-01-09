@@ -10,6 +10,8 @@ spring:
     password: root
   main:
     allow-bean-definition-overriding: true #当遇到同样名字的时候，是否允许覆盖注册
+  redis:
+    host: 192.168.200.128
 eureka:
   client:
     service-url:
@@ -29,11 +31,8 @@ hystrix:
   command:
     default:
       execution:
-        timeout:
-          #如果enabled设置为false，则请求超时交给ribbon控制
-          enabled: true
         isolation:
-          strategy: SEMAPHORE
           thread:
             # 熔断器超时时间，默认：1000/毫秒
             timeoutInMilliseconds: 20000
+          strategy: SEMAPHORE

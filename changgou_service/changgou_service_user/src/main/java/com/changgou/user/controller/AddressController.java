@@ -2,22 +2,33 @@ package com.changgou.user.controller;
 import com.changgou.common.entity.PageResult;
 import com.changgou.common.entity.Result;
 import com.changgou.common.entity.StatusCode;
-import com.changgou.user.service.AddressService;
+import com.changgou.user.config.TokenDecode;
 import com.changgou.user.pojo.Address;
+import com.changgou.user.service.AddressService;
 import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 @RestController
 @CrossOrigin
 @RequestMapping("/address")
 public class AddressController {
-
+@Autowired
+private TokenDecode tokenDecode;
 
     @Autowired
     private AddressService addressService;
 
+    @GetMapping(value = "/list")
+    public Result<List<Address>> list(){
+        Map<String, String> userMap = tokenDecode.getUserInfo();
+        String username = userMap.get("username");
+        //查询用户收件地址
+        List<Address> byName = addressService.findByName(username);
+        return new Result(true, StatusCode.OK,"查询成功！",byName);
+    }
     /**
      * 查询全部数据
      * @return
@@ -102,6 +113,4 @@ public class AddressController {
         PageResult pageResult=new PageResult(pageList.getTotal(),pageList.getResult());
         return new Result(true,StatusCode.OK,"查询成功",pageResult);
     }
-
-
 }

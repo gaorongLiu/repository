@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/sku")
@@ -22,14 +23,21 @@ public class SkuController implements SkuApi {
     @Autowired
     private SkuService skuService;
 
+    @PostMapping("/decr/count")
+    public Result decrCount(@RequestParam("username") String username) {
+        skuService.decrCount(username);
+        return new Result(true, StatusCode.OK, "库存递减成功！");
+    }
+
     /**
      * 查询全部数据
+     *
      * @return
      */
     @GetMapping
-    public Result findAll(){
+    public Result<Sku> findAll() {
         List<Sku> skuList = skuService.findAll();
-        return new Result(true, StatusCode.OK,"查询成功",skuList) ;
+        return new Result<Sku>(true, StatusCode.OK, "查询成功", skuList);
     }
 
 
@@ -39,9 +47,9 @@ public class SkuController implements SkuApi {
      * @return
      */
     @GetMapping("/{id}")
-    public Result findById(@PathVariable String id){
+    public Result findById(@PathVariable String id) {
         Sku sku = skuService.findById(id);
-        return new Result(true,StatusCode.OK,"查询成功",sku);
+        return new Result(true, StatusCode.OK, "查询成功", sku);
     }
 
 
@@ -51,9 +59,9 @@ public class SkuController implements SkuApi {
      * @return
      */
     @PostMapping
-    public Result add(@RequestBody Sku sku){
+    public Result add(@RequestBody Sku sku) {
         skuService.add(sku);
-        return new Result(true,StatusCode.OK,"添加成功");
+        return new Result(true, StatusCode.OK, "添加成功");
     }
 
 
@@ -63,11 +71,11 @@ public class SkuController implements SkuApi {
      * @param id
      * @return
      */
-    @PutMapping(value="/{id}")
-    public Result update(@RequestBody Sku sku,@PathVariable String id){
+    @PutMapping(value = "/{id}")
+    public Result update(@RequestBody Sku sku, @PathVariable String id) {
         sku.setId(id);
         skuService.update(sku);
-        return new Result(true,StatusCode.OK,"修改成功");
+        return new Result(true, StatusCode.OK, "修改成功");
     }
 
 
@@ -76,10 +84,10 @@ public class SkuController implements SkuApi {
      * @param id
      * @return
      */
-    @DeleteMapping(value = "/{id}" )
-    public Result delete(@PathVariable String id){
+    @DeleteMapping(value = "/{id}")
+    public Result delete(@PathVariable String id) {
         skuService.delete(id);
-        return new Result(true,StatusCode.OK,"删除成功");
+        return new Result(true, StatusCode.OK, "删除成功");
     }
 
     /***
@@ -87,10 +95,10 @@ public class SkuController implements SkuApi {
      * @param searchMap
      * @return
      */
-    @PostMapping(value = "/search" )
-    public Result findList(@RequestBody Map searchMap){
+    @PostMapping(value = "/search")
+    public Result findList(@RequestBody Map searchMap) {
         List<Sku> list = skuService.findList(searchMap);
-        return new Result(true,StatusCode.OK,"查询成功",list);
+        return new Result(true, StatusCode.OK, "查询成功", list);
     }
 
 
@@ -101,43 +109,50 @@ public class SkuController implements SkuApi {
      * @param size
      * @return
      */
-    @PostMapping(value = "/search/{page}/{size}" )
-    public Result findPage(@RequestBody Map searchMap, @PathVariable  int page, @PathVariable  int size){
+    @PostMapping(value = "/search/{page}/{size}")
+    public Result findPage(@RequestBody Map searchMap, @PathVariable int page, @PathVariable int size) {
         Page<Sku> pageList = skuService.findPage(searchMap, page, size);
-        PageResult pageResult=new PageResult(pageList.getTotal(),pageList.getResult());
-        return new Result(true,StatusCode.OK,"查询成功",pageResult);
+        PageResult pageResult = new PageResult(pageList.getTotal(), pageList.getResult());
+        return new Result(true, StatusCode.OK, "查询成功", pageResult);
     }
 
     /**
      * 通过spuid 查询sku
+     *
      * @return
      */
     @GetMapping("/spu/{spuId}")
-    public List<Sku> findSkuListBySpuId(@PathVariable("spuId") String spuid){
-        Map<String,Object> searchMap=new HashMap<>();
-        if (!"all".equals(spuid)){
-            searchMap.put("spuid",spuid);
+    public List<Sku> findSkuListBySpuId(@PathVariable("spuId") String spuid) {
+        Map<String, Object> searchMap = new HashMap<>();
+        if (!"all".equals(spuid)) {
+            searchMap.put("spuid", spuid);
         }
-        searchMap.put("status","1");
+        searchMap.put("status", "1");
         List<Sku> list = skuService.findList(searchMap);
         return list;
     }
 
     /**
      * 分页导入
+     *
      * @param spuId
      * @param page
      * @return
      */
     @GetMapping("/spu/{spuId}/{page}")
-    public PageResult<Sku> findSkuPageBySpuId(@PathVariable("spuId") String spuId, @PathVariable("page") Integer page){
-        Map<String,Object> searchMap=new HashMap<>();
-        if (!"all".equals(spuId)){
-            searchMap.put("spuid",spuId);
+    public PageResult<Sku> findSkuPageBySpuId(@PathVariable("spuId") String spuId, @PathVariable("page") Integer page) {
+        Map<String, Object> searchMap = new HashMap<>();
+        if (!"all".equals(spuId)) {
+            searchMap.put("spuid", spuId);
         }
-        searchMap.put("status","1");
+        searchMap.put("status", "1");
         Page<Sku> page1 = skuService.findPage(searchMap, page, 1000);
-        return new PageResult<>(page1.getTotal(),page1.getResult(),page1.getPages());
+        return new PageResult<>(page1.getTotal(), page1.getResult(), page1.getPages());
     }
 
+    @RequestMapping("/resumeStockNum")
+    public Result resumeStockNum(@RequestParam("skuId") String skuId,@RequestParam("num")Integer num){
+        skuService.resumeStockNum(skuId, num);
+        return new Result(true,StatusCode.OK,"回滚库存成功");
+    }
 }

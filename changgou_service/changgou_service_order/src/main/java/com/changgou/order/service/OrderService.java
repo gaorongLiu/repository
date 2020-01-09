@@ -8,6 +8,8 @@ import java.util.Map;
 
 public interface OrderService {
 
+    void updatePayStatus(String orderId, String transactionId);
+
     /***
      * 查询所有
      * @return
@@ -16,6 +18,7 @@ public interface OrderService {
 
     /**
      * 根据ID查询
+     *
      * @param id
      * @return
      */
@@ -25,7 +28,7 @@ public interface OrderService {
      * 新增
      * @param order
      */
-    void add(Order order);
+    String add(Order order);
 
     /***
      * 修改
@@ -64,6 +67,12 @@ public interface OrderService {
     Page<Order> findPage(Map<String, Object> searchMap, int page, int size);
 
 
+    /*** 关闭订单 * @param orderId */
+    void closeOrder(String orderId);
 
+    void batchSend(List<Order> orderList);
 
+    void take(Integer orderId, String operator);
+
+    void autoTack();
 }

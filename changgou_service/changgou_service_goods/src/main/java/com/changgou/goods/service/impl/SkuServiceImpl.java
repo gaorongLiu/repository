@@ -3,9 +3,11 @@ package com.changgou.goods.service.impl;
 import com.changgou.goods.dao.SkuMapper;
 import com.changgou.goods.pojo.Sku;
 import com.changgou.goods.service.SkuService;
+import com.changgou.order.pojo.OrderItem;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
@@ -18,7 +20,8 @@ public class SkuServiceImpl implements SkuService {
     @Autowired
     private SkuMapper skuMapper;
 
-
+@Autowired
+private RedisTemplate redisTemplate;
 
     /**
      * 查询全部列表
@@ -104,6 +107,29 @@ public class SkuServiceImpl implements SkuService {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
         return (Page<Sku>)skuMapper.selectByExample(example);
+    }
+
+    /**
+     * 库存减少
+     * @param username
+     */
+    @Override
+    public void decrCount(String username) {
+        List<OrderItem> orderItems = redisTemplate.boundHashOps("cart_" + username).values();
+        if(orderItems.isEmpty()){
+            throw new RuntimeException("没有查到相关的购物车数据");
+        }
+        for (OrderItem orderItem : orderItems) {
+            int i = skuMapper.decrCount(orderItem);
+            if (i<=0){
+                throw  new RuntimeException("库存不足，递减失败-");
+            }
+        }
+    }
+
+    @Override
+    public void resumeStockNum(String skuId, Integer num) {
+        skuMapper.resumeStockNum(skuId,num);
     }
 
     /**

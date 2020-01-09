@@ -2,11 +2,14 @@ package com.changgou.user.controller;
 import com.changgou.common.entity.PageResult;
 import com.changgou.common.entity.Result;
 import com.changgou.common.entity.StatusCode;
-import com.changgou.user.service.UserService;
+import com.changgou.user.config.TokenDecode;
 import com.changgou.user.pojo.User;
+import com.changgou.user.service.UserService;
 import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 @RestController
@@ -17,7 +20,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
+@Autowired
+private TokenDecode tokenDecode;
     /**
      * 查询全部数据
      * @return
@@ -71,6 +75,7 @@ public class UserController {
      * @param username
      * @return
      */
+    @PreAuthorize("hasAnyAuthority('admin')")
     @DeleteMapping(value = "/{username}" )
     public Result delete(@PathVariable String username){
         userService.delete(username);
@@ -108,5 +113,17 @@ public class UserController {
         return user;
     }
 
+    /**
+     * 积分添加方法
+     * @param point
+     * @return
+     */
+    @GetMapping("/points/add")
+    public Result pointAdd(Integer point){
+        Map<String, String> userInfo = tokenDecode.getUserInfo();
+        String username = userInfo.get("username");
+        int i = userService.pointAdd(username, point);
+        return  new Result(true,StatusCode.OK,"积分添加成功",i);
+    }
 
 }
